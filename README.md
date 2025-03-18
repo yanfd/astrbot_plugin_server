@@ -7,6 +7,12 @@
 
 实时监控服务器资源使用情况，支持多平台运行，提供清晰的系统状态报告。
 
+从Meg的文本式报告升级而来⬇️
+
+[![USER](https://img.shields.io/badge/user-Meguminlove-blue)](https://github.com/Meguminlove)
+
+
+
 ## 📦 安装
 
 ```bash
@@ -19,9 +25,6 @@ git clone https://github.com/yanfd/astrbot_plugin_server.git
 
 ## 🛠️ 功能特性
 - 图像化实时 CPU/内存/磁盘/网络监控
-- 智能阈值告警系统
-- 定时状态推送
-- 跨平台支持 (Linux/Windows/macOS)
 
 ## ⌨️ 使用命令
 
@@ -30,44 +33,11 @@ git clone https://github.com/yanfd/astrbot_plugin_server.git
 /状态查询  或  /status
 ```
 **示例输出：**
-```
-🖥️ 服务器状态报告
-------------------
-• 系统版本  : Linux-5.15.0-78-generic-x86_64
-• CPU使用率 : 12.3%
-• 内存使用  : 3.8G/7.6G(50.2%)
-• 磁盘使用  : 28.5G/50.0G(57.0%)
-• 网络速率  : ↑1.5MB/s ↓2.3MB/s
-• 当前时间  : 2024-02-20 16:30:45
-```
 
-### 高级功能
-```plaintext
-/状态配置 <参数> <值>
-```
-可用参数：  
-✅ `interval` - 监控间隔 (单位：秒)  
-✅ `threshold.cpu` - CPU告警阈值 (%)  
-✅ `threshold.mem` - 内存告警阈值 (%)
+![](https://p.ipic.vip/u7el21.png)
 
-**配置示例：**
-```plaintext
-/状态配置 interval 600
-/状态配置 threshold.cpu 85
-```
+![](https://p.ipic.vip/l0xwq2.png)
 
-## ⚙️ 配置文件
-编辑 `data/config/server_status_config.json`：
-```json
-{
-    "monitor_interval": 300,
-    "alert_threshold": {
-        "cpu": 90,
-        "memory": 85
-    },
-    "chart_style": "gradient"
-}
-```
 
 ## 📌 注意事项
 1. Linux 系统需安装基础工具：
