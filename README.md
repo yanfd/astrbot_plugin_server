@@ -42,7 +42,9 @@ git clone https://github.com/yanfd/astrbot_plugin_server.git
 ## 📌 注意事项
 1. Linux 系统需安装基础工具：
 ```bash
-sudo apt-get install procps sysstat requests jinja2 matplotlib PIL
+sudo apt-get install procps sysstat jinja2 psutil jinja2 PIL requests matplotlib
+#或者使用pip
+pip install psutil jinja2 PIL requests matplotlib
 ```
 2. 首次使用需授予执行权限
 3. 推荐监控间隔 ≥ 60 秒
