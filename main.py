@@ -13,6 +13,7 @@ from jinja2 import Template
 from PIL import Image
 import requests
 from io import BytesIO
+import time
 
 @register("状态监控", "YANFD&Meguminlove", "监控插件", "1.0.0", "https://github.com/yanfd/astrbot_plugin_server")
 class ServerMonitor(Star):
@@ -58,7 +59,16 @@ class ServerMonitor(Star):
             cpu_usage = psutil.cpu_percent(interval=1)
             mem = psutil.virtual_memory()
             disk = psutil.disk_usage('/')
+            #当前每秒速率
+            last_net = psutil.net_io_counters()
+            time.sleep(1)
             net = psutil.net_io_counters()
+            # 计算差值
+            bytes_sent = net.bytes_sent - last_net.bytes_sent
+            bytes_recv = net.bytes_recv - last_net.bytes_recv
+            # 转换为MB/s
+            mb_sent = bytes_sent / (1024 * 1024)
+            mb_recv = bytes_recv / (1024 * 1024)
 
             # 生成饼状图
             cpu_image_base64 = self._create_pie_chart(cpu_usage, '')
@@ -175,8 +185,8 @@ class ServerMonitor(Star):
                 system_info=f"{platform.system()} {platform.release()}",
                 uptime=self._get_uptime(),
                 load_avg=self._get_load_avg(),
-                net_sent=self._bytes_to_mb(net.bytes_sent),
-                net_recv=self._bytes_to_mb(net.bytes_recv),
+                net_sent=mb_sent,
+                net_recv=mb_recv,
                 current_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             )
 
@@ -230,13 +240,6 @@ class ServerMonitor(Star):
         plt.clf()
         return image_base64
 
-    @staticmethod
-    def _bytes_to_gb(bytes_num: int) -> float:
-        return round(bytes_num / 1024**3, 1)
-    
-    @staticmethod
-    def _bytes_to_mb(bytes_num: int) -> float:
-        return round(bytes_num / 1024**2, 1)
 
     async def terminate(self):
         if self._monitor_task and not self._monitor_task.cancelled():
