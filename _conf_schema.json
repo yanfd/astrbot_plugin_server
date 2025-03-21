@@ -1,9 +1,41 @@
 {
-    "monitor_interval": {
-        "description": "监控间隔（秒）",
-        "type": "int",
-        "default": 300,
-        "min": 0,
-        "max": 86400
+    "custom_name": {
+        "hint": "需安装依赖库:  服务端可以直接在容器内pip install。如果从管理面板安装，请点击'控制台‘->‘安装pip库'->‘输入库名’。\n 依赖库为： psutil jinja2 PIL requests matplotlib \n （识别不到插件时，可以去控制台看缺了哪个）",
+        "description": "自定义名称",
+        "type": "string",
+        "default": "default",
+        "obvious_hint": true
+    },
+    "color_config": {
+        "description": "修改配色方案",
+        "type": "object",
+        "hint": "xxxx",
+        "items": {
+            "bing_dark": {
+                "description": "饼图已占用色",
+                "type": "string",
+                "default":"default",
+                "hint": "16位颜色喔！默认#4c51bf"
+            },
+            "bing_light": {
+                "description": "饼图未占用色",
+                "type": "string",
+                "default":"default",
+                "hint": "16位颜色喔！默认#e2e8f0"
+            },
+            "background": {
+                "description": "背景色",
+                "type": "string",
+                "default":"default",
+                "hint": "16位颜色喔！默认#ffffff"
+            },
+            "font_color": {
+                "description": "字体颜色",
+                "type": "string",
+                "default":"default",
+                "hint": "16位颜色喔！默认#4a5568"
+            }
+        }
     }
+    
 }

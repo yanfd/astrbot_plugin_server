@@ -1,5 +1,6 @@
 from astrbot.api.event.filter import command
 from astrbot.api.star import Context, Star, register
+from astrbot.api.all import *
 import psutil
 import platform
 import datetime
@@ -17,10 +18,16 @@ import time
 
 @register("状态监控", "YANFD&Meguminlove", "监控插件", "1.0.0", "https://github.com/yanfd/astrbot_plugin_server")
 class ServerMonitor(Star):
-    def __init__(self, context: Context):
+    def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
-        self.config = getattr(context, 'config', {})
+        self.config = config
         self._monitor_task: Optional[asyncio.Task] = None
+        self.system_info=self.config.get('custom_name', "")
+        self.background_color = self.config.get('color_config', {}).get('background', '')
+        self.bing_dark = self.config.get('color_config', {}).get('bing_dark', '')
+        self.bing_light = self.config.get('color_config', {}).get('bing_light', '')
+        self.font_color = self.config.get('color_config', {}).get('font_color', '')
+        
 
     def _get_uptime(self) -> str:
         """获取系统运行时间"""
@@ -59,6 +66,7 @@ class ServerMonitor(Star):
             cpu_usage = psutil.cpu_percent(interval=1)
             mem = psutil.virtual_memory()
             disk = psutil.disk_usage('/')
+            
             #当前每秒速率
             last_net = psutil.net_io_counters()
             time.sleep(1)
@@ -74,6 +82,7 @@ class ServerMonitor(Star):
             cpu_image_base64 = self._create_pie_chart(cpu_usage, '')
             mem_image_base64 = self._create_pie_chart(mem.percent, '')
             disk_image_base64 = self._create_pie_chart(disk.percent, '')
+
 
             # Jinja2 模板
             TMPL = """
@@ -96,7 +105,7 @@ class ServerMonitor(Star):
             height: 100vh;
         }
         .container {
-            background-color: #ffffff;
+            background-color: {{ background_color }};
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
@@ -111,7 +120,7 @@ class ServerMonitor(Star):
             padding-top: 0.2rem;
             padding-left: 2rem;
             font-size: 1.2rem;
-            color: #4a5568;
+            color: {{ font_color }};
             margin: 0.75rem 0;
         }
         .charts-container {
@@ -128,7 +137,7 @@ class ServerMonitor(Star):
         }
         .banner h1 {
             font-size: 1.5rem;
-            color: #333;
+            color: {{ font_color }};
         }
         .charts {
             display: flex;
@@ -182,12 +191,14 @@ class ServerMonitor(Star):
                 cpu_image=cpu_image_base64,
                 mem_image=mem_image_base64,
                 disk_image=disk_image_base64,
-                system_info=f"{platform.system()} {platform.release()}",
+                system_info=f"{platform.system()} {platform.release()}" if self.system_info == 'default' or not self.system_info else self.system_info,
                 uptime=self._get_uptime(),
                 load_avg=self._get_load_avg(),
                 net_sent=mb_sent,
                 net_recv=mb_recv,
-                current_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                current_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                background_color = '#ffffff' if self.background_color == 'default' or not self.background_color else self.background_color,
+                font_color = '#4a5568' if self.font_color == 'default' or not self.font_color else self.font_color
             )
 
             # 生成图片
@@ -231,7 +242,9 @@ class ServerMonitor(Star):
         plt.figure(figsize=(4, 4))
         labels = [label, '']
         sizes = [value, 100 - value]
-        colors = ['#4c51bf', '#e2e8f0']
+        bing_dark = '#4c51bf' if self.bing_dark == 'default' or not self.bing_dark else self.bing_dark
+        bing_light = '#e2e8f0' if self.bing_light == 'default' or not self.bing_light else self.bing_light
+        colors = [bing_dark, bing_light]
         plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'white', 'linewidth': 2})
         plt.axis('equal')
         plt.savefig(buffer, format='png', bbox_inches='tight', transparent=True)
